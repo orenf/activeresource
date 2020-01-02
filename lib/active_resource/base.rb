@@ -1612,7 +1612,12 @@ module ActiveResource
         end
         const_args = [resource_name, false]
         if namespace = namespaces.reverse.detect { |ns| ns.const_defined?(*const_args) }
-          namespace.const_get(*const_args)
+          resource_from_const = namespace.const_get(*const_args)
+          if resource_from_const.respond_to?(:new)
+            resource_from_const
+          else
+            create_resource_for(resource_name)
+          end
         else
           create_resource_for(resource_name)
         end
